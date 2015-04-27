@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/menu_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/transparent" >
+
+	<LinearLayout
+	    android:id="@+id/menu_bg"
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent"
+	    android:background="#99222222"
+	    android:orientation="vertical" >
+    
+	    <RelativeLayout
+	        android:layout_width="match_parent"
+	        android:layout_height="match_parent"
+	        android:background="@android:color/transparent" >
+	        
+	        <LinearLayout 
+		        android:id="@+id/menu_bar"
+		        android:layout_width="match_parent"
+		        android:layout_height="80dp"
+		        android:layout_alignParentBottom="true"
+		        android:background="#ffffff"
+		        android:gravity="center"
+		        android:orientation="horizontal">
+	        	
+	        	<Button
+	                android:id="@+id/menu_refresh"
+	                android:layout_width="wrap_content"
+	                android:layout_height="match_parent"
+	                android:layout_marginBottom="2.5dp"
+	                android:layout_marginLeft="2.5dp"
+	                android:layout_marginRight="2.5dp"
+	                android:layout_marginTop="2.5dp"
+	                android:layout_weight="1"
+	                android:background="@drawable/bottom_background"
+	                android:drawableTop="@drawable/menu_refresh"
+	                android:paddingTop="6dp"
+	                android:text="刷新"
+	                android:textColor="#222222"
+	                android:textSize="15sp" />
+	
+	            <Button
+	                android:id="@+id/menu_reply"
+	                android:layout_width="wrap_content"
+	                android:layout_height="match_parent"
+	                android:layout_marginBottom="4dp"
+	                android:layout_marginLeft="2.5dp"
+	                android:layout_marginRight="2.5dp"
+	                android:layout_marginTop="1dp"
+	                android:layout_weight="1"
+	                android:background="@drawable/bottom_background"
+	                android:drawableTop="@drawable/menu_reply"
+	                android:paddingTop="6dp"
+	                android:text="回复"
+	                android:textColor="#222222"
+	                android:textSize="15sp" />
+	
+	    	</LinearLayout>
+	    </RelativeLayout>
+
+	</LinearLayout>
+</FrameLayout>

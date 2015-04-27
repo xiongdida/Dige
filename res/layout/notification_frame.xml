@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+    
+    <LinearLayout 
+        android:id="@+id/noti_back"
+        android:layout_width="match_parent"
+        android:layout_height="140dp"
+        android:layout_alignParentTop="true"
+        android:gravity="center_horizontal"
+        android:background="@drawable/navy"
+        android:orientation="vertical">
+        
+        <ImageView 
+            android:id="@+id/user_pic"
+            android:layout_marginTop="16dp"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:src="@drawable/noti_user"
+            android:clickable="true"/>
+        
+        <TextView 
+            android:id="@+id/user_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="13dp"
+            android:textSize="18sp"
+            android:textColor="#fff"
+            android:text="@string/not_logedin" />
+        
+    </LinearLayout>
+    
+</RelativeLayout>

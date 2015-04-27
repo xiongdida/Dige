@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+	<item 
+        android:icon="@drawable/action_refresh" 
+        android:id="@+id/notification_refresh" 
+        android:visible="true" 
+        android:title="@string/menu_refresh" 
+        android:titleCondensed="@string/menu_refresh" 
+        android:showAsAction="always" />
+    <item 
+        android:icon="@drawable/notifi_more" 
+        android:id="@+id/notification_more" 
+        android:visible="true" 
+        android:title="@string/menu_more" 
+        android:titleCondensed="@+string/zen_more" 
+        android:showAsAction="always">
+        <menu>
+            <item 
+                android:icon="@drawable/action_logout" 
+                android:id="@+id/notification_logout" 
+                android:visible="true" 
+                android:title="@string/notification_logout" 
+                android:titleCondensed="@string/notification_logout" 
+                android:showAsAction="always" />
+        </menu>
+    </item>
+
+</menu>
