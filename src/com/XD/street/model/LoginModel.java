@@ -3,7 +3,6 @@ package com.XD.street.model;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.XD.street.application.inApplication;
 import com.XD.street.data.UserInfo;
 import com.XD.street.utils.URLConn;
 import com.XD.street.utils.URLConn.OnResponseListener;
