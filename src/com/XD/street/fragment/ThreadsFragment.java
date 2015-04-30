@@ -7,9 +7,11 @@ import com.XD.street.activity.MainActivity;
 import com.XD.street.adapter.ThreadsAdapter;
 import com.XD.street.data.ThreadData;
 import com.XD.street.model.ThreadsModel;
-import com.handmark.pulltorefresh.library.PullToRefreshBase;
-import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener2;
-import com.handmark.pulltorefresh.library.PullToRefreshListView;
+import com.XD.street.view.RefreshLayout;
+import com.XD.street.view.RefreshLayout.OnLoadListener;
+//import com.handmark.pulltorefresh.library.PullToRefreshBase;
+//import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener2;
+//import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -17,6 +19,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
+
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +28,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 
 
@@ -32,7 +37,8 @@ public class ThreadsFragment extends Fragment{
 	public String fid;
 	private Context mContext;
 	private ThreadsAdapter mThreadsAdapter;
-	private PullToRefreshListView mThreadsListView;
+	private ListView mThreadsListView;
+	private RefreshLayout threadsRefresh;
 	private boolean isFirstTime;
 	private ThreadsModel mModel;
 	private ListView mList;
@@ -43,44 +49,75 @@ public class ThreadsFragment extends Fragment{
 	    mContext = getActivity();
 	    mThreadsAdapter = new ThreadsAdapter(mContext);
 	    mThreadsAdapter.array = new ArrayList<ThreadData>();
-	    mThreadsListView = ((PullToRefreshListView)getView().findViewById(R.id.threads_list));
-	    mThreadsListView.setOnRefreshListener(new OnRefreshListener2<ListView>() {
-	    	@Override
-	    	public void onPullDownToRefresh(PullToRefreshBase<ListView> paramAnonymousPullToRefreshBase)
-	    	{
-	    		MainActivity ac = (MainActivity)mContext;
+	    threadsRefresh = (RefreshLayout)getView().findViewById(R.id.threadsRefreshLayout);
+	    mThreadsListView = (ListView)getView().findViewById(R.id.threads_list);
+	    
+	    threadsRefresh.setColorSchemeResources(android.R.color.holo_blue_bright,  
+	            android.R.color.holo_green_light, android.R.color.holo_orange_light, android.R.color.holo_red_light);
+	    threadsRefresh.setOnRefreshListener(new OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+            	MainActivity ac = (MainActivity)mContext;
 	    		if(ac.isLoading())
 	    		{
-	    			mThreadsListView.onRefreshComplete();
+//	    			threadsRefresh.setRefreshing(false);
 	    			return;
 	    		}
 	    		mModel.refresh();
-	    	}
-	    	
-	    	@Override
-	    	public void onPullUpToRefresh(PullToRefreshBase<ListView> paramAnonymousPullToRefreshBase)
-	    	{
-	    		MainActivity ac = (MainActivity)mContext;
+            }
+	    });
+	    threadsRefresh.setOnLoadListener(new OnLoadListener() {
+	    	  
+            @Override  
+            public void onLoad() {
+            	MainActivity ac = (MainActivity)mContext;
 	    		if (ac.isLoading())
 	    		{
-	    			mThreadsListView.onRefreshComplete();
+//	    			threadsRefresh.setRefreshing(false);
 	    			return;
 	    		}
 	    		Log.v("XD", "Pull To Load More Task Execute.");
+	    		Toast.makeText(ac, "½Ó×ÅÍùÏÂ»¬°É ^_^o~", Toast.LENGTH_SHORT).show();
 	    		mModel.loadMore();
-	    	}
-
-	    });
-	    ListView actureListView = (ListView)mThreadsListView.getRefreshableView();
-	    mList = actureListView;
+            }  
+        }); 
+//	    mThreadsListView.setOnRefreshListener(new OnRefreshListener2<ListView>() {
+//	    	@Override
+//	    	public void onPullDownToRefresh(PullToRefreshBase<ListView> paramAnonymousPullToRefreshBase)
+//	    	{
+//	    		MainActivity ac = (MainActivity)mContext;
+//	    		if(ac.isLoading())
+//	    		{
+//	    			mThreadsListView.onRefreshComplete();
+//	    			return;
+//	    		}
+//	    		mModel.refresh();
+//	    	}
+//	    	
+//	    	@Override
+//	    	public void onPullUpToRefresh(PullToRefreshBase<ListView> paramAnonymousPullToRefreshBase)
+//	    	{
+//	    		MainActivity ac = (MainActivity)mContext;
+//	    		if (ac.isLoading())
+//	    		{
+//	    			mThreadsListView.onRefreshComplete();
+//	    			return;
+//	    		}
+//	    		Log.v("XD", "Pull To Load More Task Execute.");
+//	    		mModel.loadMore();
+//	    	}
+//
+//	    });
+//	    ListView actureListView = (ListView)mThreadsListView.getRefreshableView();
+	    mList = mThreadsListView;
 //	    AdView localAdView = new AdView(this.mContext);
 //	    localAdView.setAdUnitId("ca-app-pub-8494263015060478/5574028341");
 //	    localAdView.setAdSize(AdSize.BANNER);
 //	    this.mAds = localAdView;
 //	    this.mList.addFooterView(localAdView);
 //	    localAdView.loadAd(new AdRequest.Builder().build());
-	    actureListView.setAdapter(mThreadsAdapter);
-	    actureListView.setOnItemClickListener(new OnItemClickListener()
+	    mThreadsListView.setAdapter(mThreadsAdapter);
+	    mThreadsListView.setOnItemClickListener(new OnItemClickListener()
 	    {
 	    	public void onItemClick(AdapterView<?> parent, View view, int position,
 					long id)
@@ -104,7 +141,8 @@ public class ThreadsFragment extends Fragment{
 	    	}
 	    });
 	    mModel = new ThreadsModel(mContext,fid);
-	    isFirstTime = true;		
+	    isFirstTime = true;
+	    threadsRefresh.setEnabled(true);
 	}
 	
 	@Override
@@ -154,12 +192,13 @@ public class ThreadsFragment extends Fragment{
 			// model finished load threads
 			Log.d("XD", "onReceive");
 			((MainActivity)mContext).showLoadingView(false);
-			mThreadsListView.onRefreshComplete();
+			threadsRefresh.setRefreshing(false);
+			threadsRefresh.setLoading(false);
 			String action = intent.getAction();
 			if (action.equals(ThreadsModel.FinishedLoad)) {				
 				mThreadsAdapter.array = mModel.threads;
 				mThreadsAdapter.notifyDataSetChanged();
-				mList.scrollTo(0, 0);
+//				mList.scrollTo(0, 0);
 			}
 			else{
 				MainActivity ac = (MainActivity)getActivity();

@@ -20,6 +20,7 @@ public class MenuBar {
 	public static final int MENU_NONE = 0xFF00;
 	public static final int MENU_REPLY = 0xFF01;
 	public static final int MENU_REFRESH = 0xFF02;
+	public static final int MENU_RECOMMEND = 0xFF03;
 	
 	private Animation SlideInAnimation;
 	private Animation SlideOutAnimation;
@@ -30,6 +31,7 @@ public class MenuBar {
 	
 	private Button mButtonReply;
 	private Button mButtonRefresh;
+	private Button mButtonRecommend;
 	private Context mContext;
 	private OnItemClickListener mListener;
 	private int selected;
@@ -52,6 +54,8 @@ public class MenuBar {
 		mButtonReply.setOnClickListener(mOnClickListener);
 		mButtonRefresh = (Button) mMenuView.findViewById(R.id.menu_refresh);
 		mButtonRefresh.setOnClickListener(mOnClickListener);
+		mButtonRecommend = (Button) mMenuView.findViewById(R.id.menu_recommend);
+		mButtonRecommend.setOnClickListener(mOnClickListener);
 		
 		mMenuBg.setOnClickListener(new OnClickListener() {
 
@@ -84,9 +88,9 @@ public class MenuBar {
 				}
 			}
 		});
-//		removeFromSuperView(mMenuView);
-		((Activity) mContext).addContentView(mMenuView, new FrameLayout.LayoutParams(
-				LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+		removeFromSuperView(mMenuView);
+//		((Activity) mContext).addContentView(mMenuView, new FrameLayout.LayoutParams(
+//				LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 	}
 
 	private OnClickListener mOnClickListener = new OnClickListener() {
@@ -98,6 +102,9 @@ public class MenuBar {
 			case R.id.menu_reply:
 //				Toast.makeText(mContext, "»Ø¸´", Toast.LENGTH_LONG).show();
 				selected = MENU_REPLY;
+				break;
+			case R.id.menu_recommend:
+				selected = MENU_RECOMMEND;
 				break;
 			case R.id.menu_refresh:
 				selected = MENU_REFRESH;
@@ -111,7 +118,11 @@ public class MenuBar {
 
 	public void show() {
 		// TODO Auto-generated method stub
-//		((Activity)getContext()).addContentView(this, new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+		Activity ac = (Activity) mContext;
+
+		ac.addContentView(mMenuView, new FrameLayout.LayoutParams(
+				LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+		
 		mMenuBar.startAnimation(SlideInAnimation);
 	}
 	

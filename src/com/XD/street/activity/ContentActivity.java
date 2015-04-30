@@ -8,6 +8,7 @@ import com.XD.street.adapter.ThreadDataAdapter;
 import com.XD.street.data.ThreadData;
 import com.XD.street.data.ThreadReply;
 import com.XD.street.model.LoginModel;
+import com.XD.street.model.commentModel;
 import com.XD.street.model.contentModel;
 import com.XD.street.view.CounterBar;
 import com.XD.street.view.CounterBar.OnJumpListener;
@@ -39,6 +40,7 @@ public class ContentActivity extends Activity {
 	private String mFid;
 	private String mTid;
 	private contentModel ctModel;
+	private commentModel comModel;
 
 	private PullToRefreshListView mThreadDataListView;
 	private ThreadDataAdapter mThreadDataAdapter;
@@ -48,6 +50,7 @@ public class ContentActivity extends Activity {
 	private MenuBar mMenuBar;
 	private TextView mCounter;
 	private CounterBar mCounterBar;
+	private boolean isFirstTime;
 
 	private static final String ThreadDataURL = "http://bbs.hupu.com/";
 	
@@ -64,6 +67,7 @@ public class ContentActivity extends Activity {
 		mTid = intent.getStringExtra("tid");
 		
 		ctModel = new contentModel(this, mTid);
+		comModel = new commentModel(this, mFid, mTid);
 		
 		mThreadDataAdapter = new ThreadDataAdapter(this);
 		mThreadDataAdapter.threadTopic = new ThreadData();
@@ -88,14 +92,12 @@ public class ContentActivity extends Activity {
 		
 		mCounter = (TextView) findViewById(R.id.counter_btn);
 		
-		IntentFilter filter = new IntentFilter();
-		filter.addAction(contentModel.ThreadData_FinishedLoad);
-		filter.addAction(contentModel.ThreadData_FailedLoad);
-		filter.addAction(contentModel.Replies_FinishedLoad);
-		filter.addAction(contentModel.Replies_FailedLoad);
-		registerReceiver(mBroadcastReceiver, filter);
+		isFirstTime = true;
+		registerBroadcast();
+
+		mMenuBar = MenuBar.getInstance(this);
+		mMenuBar.setOnItemClickListener(mMenuListener);
 		
-//		mMenuBar = MenuBar.getInstance(this);
 		mCounterBar = CounterBar.getInstance(this);
 		mCounterBar.setOnJumpListener(new OnJumpListener() {				
 			@Override
@@ -117,6 +119,65 @@ public class ContentActivity extends Activity {
 		}
 	}
 	
+	@Override
+	protected void onPause() {
+		try {
+			unregisterReceiver(mBroadcastReceiver);
+		} catch (Exception e) {
+			// mBroadCastReceiver is not registered in some case
+			e.printStackTrace();
+		}
+
+		super.onPause();
+	}
+
+	@Override
+	protected void onResume() {
+		if (!isFirstTime) {
+			registerBroadcast();
+		}
+		isFirstTime = false;
+		super.onResume();
+	}
+	
+	private void registerBroadcast() {
+		try {
+			IntentFilter filter = new IntentFilter();
+
+			// for content model
+			filter.addAction(contentModel.ThreadData_FinishedLoad);
+			filter.addAction(contentModel.ThreadData_FailedLoad);
+			filter.addAction(contentModel.Replies_FinishedLoad);
+			filter.addAction(contentModel.Replies_FailedLoad);
+			
+			// for comment model
+			filter.addAction(commentModel.RECOMMEND_FAILED);
+			filter.addAction(commentModel.RECOMMEND_FINISHED);
+//			// for reply model
+//			filter.addAction(ZenReplyModel.ZenThreadDataDidFinishedLoad);
+//			filter.addAction(ZenReplyModel.ZenThreadDataDidFailedLoad);
+//			filter.addAction(ZenReplyModel.ZenRepliesDidFinishedLoad);
+//			filter.addAction(ZenReplyModel.ZenRepliesDidFailedLoad);
+//			filter.addAction(ZenReplyModel.ZenRepliesEmpty);
+//			
+//			// for comment model
+//			filter.addAction(ZenCommentModel.ZEN_LIGHT_FINISHED);
+//			filter.addAction(ZenCommentModel.ZEN_LIGHT_FAILED);
+//			filter.addAction(ZenCommentModel.ZEN_RECOMMEND_FINISHED);
+//			filter.addAction(ZenCommentModel.ZEN_RECOMMEND_FAILED);
+//			
+//			// for archive model
+//			filter.addAction(ZenArchiveModel.ZEN_ARCHIVE_FAILED);
+//			filter.addAction(ZenArchiveModel.ZEN_ARCHIVE_SUCCESS);
+//			
+			registerReceiver(mBroadcastReceiver, filter);
+		} catch (Exception e) {
+			// mBroadcastReceiver register failed
+			e.printStackTrace();
+		}
+
+	}
+	
 	private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver()
 	{
 		@Override  
@@ -133,6 +194,16 @@ public class ContentActivity extends Activity {
 			else if (action.equals(contentModel.RepliesEmpty)) {
 				mLoading.hide();
 				mThreadDataAdapter.notifyDataSetChanged();
+			}
+			else if (action.equals(commentModel.RECOMMEND_FINISHED)) {
+				mLoading.hide();
+				String msg = intent.getStringExtra("msg");
+				Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
+			}
+			else if (action.equals(commentModel.RECOMMEND_FAILED)) {
+				mLoading.hide();
+				String msg = intent.getStringExtra("msg");
+				Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
 			}
 		}
 
@@ -185,8 +256,7 @@ public class ContentActivity extends Activity {
 			nextPage();
 			break;
 		case R.id.more_btn:
-			mMenuBar = MenuBar.getInstance(this);
-			mMenuBar.setOnItemClickListener(mMenuListener);
+			mMenuBar.show();
 			break;
 		case R.id.counter_btn:
 			mCounterBar.show();
@@ -256,6 +326,9 @@ public class ContentActivity extends Activity {
 			case MenuBar.MENU_REPLY:
 				comment();
 				break;
+			case MenuBar.MENU_RECOMMEND:
+				recommend();
+				break;
 			case MenuBar.MENU_REFRESH:
 				refresh();
 				break;
@@ -281,6 +354,15 @@ public class ContentActivity extends Activity {
 		}
 	}
 
+	protected void recommend() {
+		// TODO Auto-generated method stub
+		if (isLogin()) {
+			mLoading.show("ÕýÔÚÍÆ¼ö...");
+			comModel.recommend("recommend", "from zen for android",
+					LoginModel.getInstance(this).getToken());
+		}
+	}
+
 	private boolean isLogin() {
 		LoginModel inModel = LoginModel.getInstance(this);
 		if (!inModel.isLogedin) {
@@ -296,6 +378,7 @@ public class ContentActivity extends Activity {
 	
 	private void refresh() {
 		// TODO Auto-generated method stub
-		
+		mLoading.show();
+		ctModel.refresh();
 	}
 }
